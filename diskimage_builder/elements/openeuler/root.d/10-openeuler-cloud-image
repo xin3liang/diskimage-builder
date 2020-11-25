@@ -1,0 +1,53 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+[ -n "$ARCH" ]
+[ -n "$TARGET_ROOT" ]
+
+if [[ "amd64" == "$ARCH" ]]; then
+    ARCH="x86_64"
+elif [[ "arm64" == "$ARCH" ]]; then
+    ARCH="aarch64"
+fi
+
+if ! [[ "$ARCH" =~ (aarch64|x86_64) ]]; then
+    echo "Only aarch64 and x86_64 images are currently available but ARCH is set to $ARCH."
+    exit 1
+fi
+
+DIB_CLOUD_IMAGES=${DIB_CLOUD_IMAGES:-http://openeuler-repo.huawei.com/openEuler-${DIB_RELEASE}/docker_img/${ARCH}}
+BASE_IMAGE_FILE=${BASE_IMAGE_FILE:-openEuler-docker.${ARCH}.tar.xz}
+SHA256SUMS_FILE=${SHA256SUMS_FILE:-${BASE_IMAGE_FILE}.sha256sum}
+
+CACHED_FILE=$DIB_IMAGE_CACHE/$BASE_IMAGE_FILE
+CACHED_SHA256SUMS_FILE=$DIB_IMAGE_CACHE/SHA256SUMS.$BASE_IMAGE_FILE
+TAR_TMP_DIR=$DIB_IMAGE_CACHE/tmp
+
+# FIXME: either check the checksums into git or verify the signature
+# on the checksums. We should not be trusting checksums we download
+# over HTTP
+if [ -n "$DIB_OFFLINE" -a -f "$CACHED_FILE" ] ; then
+    echo "Not checking freshness of cached $CACHED_FILE."
+else
+    echo "Fetching Base Image"
+    $TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$SHA256SUMS_FILE $CACHED_SHA256SUMS_FILE
+    $TMP_HOOKS_PATH/bin/cache-url $DIB_CLOUD_IMAGES/$BASE_IMAGE_FILE $CACHED_FILE
+    pushd $DIB_IMAGE_CACHE
+    # Calculate sha256sum of downloaded image and check against content from sha256 file
+    SHA256SUM=$(sha256sum ${BASE_IMAGE_FILE} | cut -d " " -f1)
+    grep -q $SHA256SUM SHA256SUMS.$BASE_IMAGE_FILE
+    popd
+fi
+
+# Extract the base image (use --numeric-owner to avoid UID/GID mismatch between
+# image tarball and host OS)
+mkdir -p $TAR_TMP_DIR
+tar -C $TAR_TMP_DIR -xf $CACHED_FILE
+sudo tar -C $TARGET_ROOT --numeric-owner -xf $TAR_TMP_DIR/*.tar
+sudo mkdir $TARGET_ROOT/proc $TARGET_ROOT/dev $TARGET_ROOT/sys
+rm -rf $TAR_TMP_DIR

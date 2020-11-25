@@ -10,6 +10,11 @@
 "family": {
     "redhat": {
       "lsb_release": "redhat-lsb-core"
+    },
+    "openeuler": {
+      "dhcp-client": ""
+      "lsb_release": "openeuler-lsb"
+      "redhat-rpm-config": "openEuler-rpm-config"
     }
   }
 }

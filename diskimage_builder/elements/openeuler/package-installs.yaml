@@ -1,0 +1,12 @@
+# Install any packages in this file that may not be in the base cloud
+# image but could reasonably be expected
+audit:
+dracut:
+dracut-config-generic:
+grubby:
+kernel:
+initscripts:
+man-pages:
+openeuler-lsb:
+openEuler-rpm-config:
+NetworkManager:

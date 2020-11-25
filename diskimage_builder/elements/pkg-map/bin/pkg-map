@@ -34,6 +34,8 @@ def os_family(distro):
         family = 'suse'
     elif distro == 'gentoo':
         family = 'gentoo'
+    elif distro == 'openeuler':
+        family = 'openeuler'
 
     return family
 
