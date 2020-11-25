@@ -1,0 +1,31 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+export YUM_REPOS_PATH="$TMP_MOUNT_PATH/etc/yum.repos.d"
+
+# Some older openEuler cloud images don't pre-install openEuler-repos package.
+# So we generate one here to make building work. The repo file name is the same as openEuler-repos package.
+# And then install openEuler-repos package to override the repo file.
+#
+# If there is any repo files already which means openEuler-repos package is installed already, then do nothing.
+# In this case, we don't want to override anything here.
+if [ -n "$(sudo ls -A $YUM_REPOS_PATH)" ]; then
+    exit 0
+fi
+
+repo_file=$(mktemp)
+cat > $repo_file << EOF
+[OS]
+name=openEuler-$DIB_RELEASE - OS
+baseurl=http://repo.openeuler.org/openEuler-$DIB_RELEASE/OS/\$basearch/
+enabled=1
+gpgcheck=1
+gpgkey=http://repo.openeuler.org/openEuler-$DIB_RELEASE/OS/\$basearch/RPM-GPG-KEY-openEuler
+EOF
+
+sudo mv $repo_file $YUM_REPOS_PATH/openEuler.repo
