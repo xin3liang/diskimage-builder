@@ -32,6 +32,7 @@
         - dib-functests-bionic-python3-extras
         - dib-functests-bionic-python3-containers
         - dib-functests-openeuler-on-bionic
+        - dib-functests-openeuler-on-bionic-image
         - ironic-python-agent-check-image-dib-centos8
         # IPA jobs that build AND validate an image via deployment (two ways).
         - ipa-tempest-wholedisk-bios-ipmi-direct-dib-src:
@@ -42,6 +43,7 @@
       jobs:
         - dib-functests-arm64-bionic
         - dib-functests-openeuler-on-bionic-arm64
+        - dib-functests-openeuler-on-bionic-image-arm64
     gate:
       jobs:
         - openstack-tox-pylint

@@ -1,0 +1,6 @@
+{
+  "default": {
+    "grub-efi-amd64": "grub2-tools grub2 grub2-pc grub2-efi-x64 grub2-efi-x64-modules efibootmgr shim-x64",
+    "grub-efi-arm64": "grub2-tools grub2-efi-aa64 grub2-efi-aa64-modules efibootmgr shim-aa64"
+  }
+}
