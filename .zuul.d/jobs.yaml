@@ -88,6 +88,20 @@
         - ubuntu-minimal/focal-arm64-build-succeeds
         - centos-minimal/8-aarch64-build-succeeds
 
+- job:
+    name: dib-functests-openeuler-image
+    description: |
+      OpenEuler build tests.
+      This is tests that rely on downloading an upstream
+      image. We generally do not have mirrors for these images
+      so they can be slighlty unreliable.
+    abstract: true
+    voting: false
+    parent: dib-functests-base
+    vars:
+      dib_functests:
+        - openeuler/21.03-build-succeeds
+
 # Bionic / Python3 tests
 - job:
     name: dib-functests-bionic-python3
@@ -103,6 +117,16 @@
     parent: dib-functests-image
     nodeset: ubuntu-bionic
     voting: false
+
+# TODO(xinliang): Merge this test into dib-functests-bionic-python3-image
+# After openEuler repos mirrored and test is stable.
+- job:
+    name: dib-functests-openeuler-on-bionic-image
+    description: |
+      Run openEuler tests on an Bionic build host.
+    parent: dib-functests-openeuler-image
+    nodeset: ubuntu-bionic
+
 
 - job:
     name: dib-functests-bionic-python3-extras
@@ -127,6 +151,14 @@
       ARM64 image tests building on am ARM64 Bionic host
     nodeset: ubuntu-bionic-arm64
     parent: dib-functests-arm64
+
+# TODO(xinliang): Add other distro image tests, not just openEuler.
+- job:
+    name: dib-functests-openeuler-on-bionic-image-arm64
+    description: |
+      Run openEuler tests on an Bionic build host.
+    parent: dib-functests-openeuler-image
+    nodeset: ubuntu-bionic-arm64
 
 #
 # Build and boot functional tests

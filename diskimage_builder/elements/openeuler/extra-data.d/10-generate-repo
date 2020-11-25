@@ -1,0 +1,75 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+yum_repos_dir="$TMP_MOUNT_PATH/etc/yum.repos.d"
+
+# Some older openEuler cloud images don't pre-install openEuler-repos package properly.
+# So we generate one here to make building work. The repo file name is the same as openEuler-repos package.
+# And then install/upgrade openEuler-repos package to override the repo file.
+#
+# If there is any repo files already which means openEuler-repos package is installed already, then do nothing.
+# In this case, we don't want to override anything here.
+if [ -n "$(sudo ls -A $yum_repos_dir)" ]; then # dib-lint: safe_sudo
+    exit 0
+fi
+
+repo_file=$(mktemp)
+cat > $repo_file << EOF
+#generic-repos is licensed under the Mulan PSL v2.
+#You can use this software according to the terms and conditions of the Mulan PSL v2.
+#You may obtain a copy of Mulan PSL v2 at:
+#    http://license.coscl.org.cn/MulanPSL2
+#THIS SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OF ANY KIND, EITHER EXPRESS OR
+#IMPLIED, INCLUDING BUT NOT LIMITED TO NON-INFRINGEMENT, MERCHANTABILITY OR FIT FOR A PARTICULAR
+#PURPOSE.
+#See the Mulan PSL v2 for more details.
+
+[OS]
+name=OS
+baseurl=http://repo.openeuler.org/openEuler-$DIB_RELEASE/OS/\$basearch/
+enabled=1
+gpgcheck=1
+gpgkey=http://repo.openeuler.org/openEuler-$DIB_RELEASE/OS/\$basearch/RPM-GPG-KEY-openEuler
+
+[everything]
+name=everything
+baseurl=http://repo.openeuler.org/openEuler-$DIB_RELEASE/everything/\$basearch/
+enabled=1
+gpgcheck=1
+gpgkey=http://repo.openeuler.org/openEuler-$DIB_RELEASE/everything/\$basearch/RPM-GPG-KEY-openEuler
+
+[EPOL]
+name=EPOL
+baseurl=http://repo.openeuler.org/openEuler-$DIB_RELEASE/EPOL/\$basearch/
+enabled=1
+gpgcheck=1
+gpgkey=http://repo.openeuler.org/openEuler-$DIB_RELEASE/OS/\$basearch/RPM-GPG-KEY-openEuler
+
+[debuginfo]
+name=debuginfo
+baseurl=http://repo.openeuler.org/openEuler-$DIB_RELEASE/debuginfo/\$basearch/
+enabled=1
+gpgcheck=1
+gpgkey=http://repo.openeuler.org/openEuler-$DIB_RELEASE/debuginfo/\$basearch/RPM-GPG-KEY-openEuler
+
+[source]
+name=source
+baseurl=http://repo.openeuler.org/openEuler-$DIB_RELEASE/source/
+enabled=1
+gpgcheck=1
+gpgkey=http://repo.openeuler.org/openEuler-$DIB_RELEASE/source/RPM-GPG-KEY-openEuler
+
+[update]
+name=update
+baseurl=http://repo.openeuler.org/openEuler-$DIB_RELEASE/update/\$basearch/
+enabled=1
+gpgcheck=1
+gpgkey=http://repo.openeuler.org/openEuler-$DIB_RELEASE/OS/\$basearch/RPM-GPG-KEY-openEuler
+EOF
+
+sudo mv $repo_file ${yum_repos_dir}/openEuler.repo # dib-lint: safe_sudo

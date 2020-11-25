@@ -1,0 +1,15 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-0} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# The original openEuler cloud image put the whole /boot dir to the EFIi
+# partition. DIB generates its own EFI partition, so it needs to uninstall
+# kernel/grub packages in phase pre-install.d. Re-install kernel package
+# in phase install.d and grub packages in bootloader element again.
+# Otherwise these packages will not be installed properly.
+install-packages -e kernel
+install-packages -e -m openeuler grub-efi-$ARCH

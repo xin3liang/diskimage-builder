@@ -1,0 +1,8 @@
+# The original openEuler cloud image put the whole /boot dir to EFI partition.
+# DIB generates its own EFI partition, so it needs to uninstall kernnel package
+# in phase pre-install.d and re-install it in phase install.d again.
+kernel:
+# Some older openEuler cloud images don't pre-install openEuler-repos package.
+# So make sure repos package is installed.
+openEuler-repos:
+  phase: pre-install.d
