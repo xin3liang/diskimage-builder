@@ -181,7 +181,7 @@ function select_boot_kernel_initrd () {
     if [ -n "${DIB_BAREMETAL_KERNEL_PATTERN:-}" -a -n "${DIB_BAREMETAL_INITRD_PATTERN:-}" ]; then
         KERNEL=$(basename $(eval ls -1rv "$BOOTDIR/${DIB_BAREMETAL_KERNEL_PATTERN}" | head -1))
         RAMDISK=$(basename $(eval ls -1rv "$BOOTDIR/${DIB_BAREMETAL_INITRD_PATTERN}" | head -1))
-    elif [ -f $TARGET_ROOT/etc/redhat-release ]; then
+    elif [ -f $TARGET_ROOT/etc/redhat-release ] || [ -f $TARGET_ROOT/etc/openEuler-release ]; then
 
         # Prioritize PAE if present
         KERNEL=$(ls -1rv $BOOTDIR/vmlinuz* | grep PAE | grep -v debug | head -1 || echo "")

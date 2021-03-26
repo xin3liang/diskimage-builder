@@ -43,6 +43,7 @@ BOOTDIR=$TARGET_ROOT/boot
 # Select_boot_kernel has support for redhat/debian/openSUSE
 # openSUSE has a built-in logic to delete old kernels
 # Hence cleanup_old_kernel will be used only for redhat and debian derived distros.
-if [ -f $TARGET_ROOT/etc/redhat-release -o -f $TARGET_ROOT/etc/debian_version ] ; then
+if [ -f $TARGET_ROOT/etc/redhat-release ] || [ -f $TARGET_ROOT/etc/debian_version ] || \
+    [ -f $TARGET_ROOT/etc/openEuler-release ]; then
     cleanup_old_kernel_initrd
 fi

@@ -3,7 +3,7 @@ iscsi-boot
 ==========
 Handles configuration for the disk to be capable of serving as
 a remote root filesystem through iSCSI. Currently, this element
-can configure Ubuntu/Debian images and CentOS images.
+can configure Ubuntu/Debian images and CentOS/openEuler images.
 
 It performs the following actions:
 
@@ -13,7 +13,7 @@ For Ubuntu/Debian images:
     ``ISCSI_AUTO=true`` within it.
   * Updates the initramfs to apply the changes.
 
-For CentOS images:
+For CentOS/openEuler images:
   * Required ``dracut-regenerate`` element when performs ``disk-image-create``.
   * Updates ``network`` and ``iscsi`` into ``dracut-regenerate`` during
     pre-installs.

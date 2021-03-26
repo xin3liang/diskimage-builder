@@ -7,7 +7,7 @@ fi
 set -eu
 set -o pipefail
 
-if [[ $DISTRO_NAME =~ "centos" ]]; then
+if [[ $DISTRO_NAME =~ (centos|openeuler) ]]; then
     if [[ -L /boot/grub2/grubenv ]]; then
         rm -f /boot/grub2/grubenv
     fi
