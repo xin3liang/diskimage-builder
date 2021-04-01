@@ -85,6 +85,14 @@ function install_grub2 {
         GRUB_MKCONFIG="grub-mkconfig"
     fi
 
+    # This might be better factored out into a per-distro 'install-bootblock'
+    # helper.
+    if [ -d /boot/grub2 ]; then
+        GRUB_CFG=/boot/grub2/grub.cfg
+    elif [ -d /boot/grub ]; then
+        GRUB_CFG=/boot/grub/grub.cfg
+    fi
+
     # If no GRUB2 is found, fallback to extlinux
     if [ -z "$GRUBNAME" ] || [ $($GRUBNAME --version | grep "0.97" | wc -l) -ne 0 ]; then
         echo "No GRUB2 found. Fallback to Extlinux..."
@@ -176,20 +184,12 @@ function install_grub2 {
             esac
             if [ -d /boot/efi/$EFI_BOOT_DIR ]; then
                 # Make the grub config in the EFI directory for UEFI boot
-                $GRUB_MKCONFIG -o /boot/efi/$EFI_BOOT_DIR/grub.cfg
+                GRUB_CFG=/boot/efi/$EFI_BOOT_DIR/grub.cfg
             else
                 echo "WARNING: /boot/efi/$EFI_BOOT_DIR does not exist, UEFI secure boot not supported"
                 $GRUBNAME --modules="$modules" $extra_options $GRUB_OPTS $BOOT_DEV
             fi
         fi
-    fi
-
-    # This might be better factored out into a per-distro 'install-bootblock'
-    # helper.
-    if [ -d /boot/grub2 ]; then
-        GRUB_CFG=/boot/grub2/grub.cfg
-    elif [ -d /boot/grub ]; then
-        GRUB_CFG=/boot/grub/grub.cfg
     fi
 
     # Override the root device to the default label, and disable uuid
