@@ -1,0 +1,23 @@
+#!/bin/bash
+
+if [ ${DIB_DEBUG_TRACE:-1} -gt 0 ]; then
+    set -x
+fi
+set -eu
+set -o pipefail
+
+# NOTE(xinliang): This script should run before script elements/yum-minimal/root.d/08-yum-chroot
+# So set the script name prefix as 00-
+export YUM_REPOS_PATH="$(dirname $0)/../yum.repos.d"
+mkdir -p $YUM_REPOS_PATH
+
+repo_file=$(mktemp)
+cat > $repo_file << EOF
+[OS]
+name=openEuler-$DIB_RELEASE - OS
+baseurl=http://repo.openeuler.org/openEuler-$DIB_RELEASE/OS/\$basearch/
+enabled=1
+gpgcheck=0
+EOF
+
+mv $repo_file $YUM_REPOS_PATH/openEuler.repo

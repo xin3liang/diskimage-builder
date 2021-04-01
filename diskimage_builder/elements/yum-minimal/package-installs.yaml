@@ -7,6 +7,9 @@ initscripts:
 man-pages:
 lsb_release:
 redhat-rpm-config:
+# NOTE(xinliang): In openEuler uninstaller linux-firmware
+# will uninstall kernel also due to dependency, so set this
+# package to empty for openEuler in pkg-map file.
 linux-firmware:
     uninstall: true
 linux-firmware-whence:
