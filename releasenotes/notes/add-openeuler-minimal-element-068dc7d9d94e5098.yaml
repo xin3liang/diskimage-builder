@@ -1,0 +1,6 @@
+---
+features:
+  - |
+    Add ``openeuler-minimal`` element. OpenEuler is a YUM/DNF distro like CentOS.
+    It references Fedora and CentOS a lot for the rpm package building. For more
+    info about openEuler, see: https://openeuler.org.
